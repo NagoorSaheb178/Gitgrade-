@@ -1,0 +1,5 @@
+{
+  "name": "GitGrade - AI Repo Profiler",
+  "description": "An intelligent system that evaluates GitHub repositories, providing a comprehensive score, summary, and personalized roadmap using Gemini AI.",
+  "requestFramePermissions": []
+}
