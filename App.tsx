@@ -22,9 +22,8 @@ function App() {
   useEffect(() => {
     // Check Puter Auth on mount to warn user early if needed
     if (typeof puter !== 'undefined') {
-      puter.auth.isSignedIn().then((signedIn: boolean) => {
-        setIsPuterAuth(signedIn);
-      });
+      const signedIn = puter.auth.isSignedIn();
+      setIsPuterAuth(!!signedIn);
     }
   }, []);
 
