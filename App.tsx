@@ -18,6 +18,8 @@ function App() {
 
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!url || loading) return;
+
     setError(null);
     setResult(null);
 
@@ -30,10 +32,10 @@ function App() {
     setLoading(true);
 
     try {
-      setStage('Fetching repository data...');
+      setStage('Fetching data');
       const context = await fetchRepoData(repoInfo.owner, repoInfo.repo);
 
-      setStage('Analyzing with Puter AI...');
+      setStage('Analyzing AI');
       const analysis = await analyzeRepo(context);
 
       setResult(analysis);
@@ -46,39 +48,42 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-gray-100 selection:bg-primary/30 font-sans">
+    <div className="min-h-screen bg-background text-gray-100 selection:bg-primary/30 font-sans pb-24">
       {/* Navbar */}
       <nav className="border-b border-white/5 bg-background/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.reload()}>
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
               <Github className="text-white w-5 h-5" />
             </div>
             <span className="font-bold text-xl tracking-tight">GitGrade</span>
           </div>
           <div className="hidden md:flex items-center gap-4 text-sm text-gray-400">
-             <span className="flex items-center gap-1.5"><Sparkles size={14} className="text-accent"/> Puter.js AI</span>
+             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+               <Sparkles size={14} className="text-accent"/> 
+               Puter.js Intelligence
+             </span>
           </div>
         </div>
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 py-12">
         {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-16 animate-reveal">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-primary mb-6">
             <Sparkles size={12} />
-            <span>Puter-Powered Analysis</span>
+            <span>Developer Profile Analyzer v2.0</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500 mb-6 tracking-tight">
             How good is your code, really?
           </h1>
-          <p className="text-lg text-gray-400 mb-8">
+          <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
             Get an instant AI evaluation of your GitHub repository. 
-            Receive a score, actionable roadmap, and professional summary.
+            Receive a score, actionable roadmap, and professional summary in seconds.
           </p>
 
-          <form onSubmit={handleAnalyze} className="relative max-w-xl mx-auto">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+          <form onSubmit={handleAnalyze} className="relative max-w-xl mx-auto group">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none group-focus-within:text-primary transition-colors">
               <Github className="h-5 w-5 text-gray-500" />
             </div>
             <input
@@ -86,15 +91,16 @@ function App() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://github.com/username/project-name"
-              className="w-full bg-surface border border-white/10 rounded-xl py-4 pl-12 pr-32 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all shadow-xl"
+              disabled={loading}
+              className="w-full bg-surface border border-white/10 rounded-2xl py-5 pl-12 pr-36 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all shadow-2xl disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={loading}
-              className="absolute right-2 top-2 bottom-2 bg-white text-black hover:bg-gray-200 font-semibold px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="absolute right-2 top-2 bottom-2 bg-white text-black hover:bg-gray-200 active:scale-95 font-bold px-8 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
             >
               {loading ? (
-                <Loader2 className="animate-spin w-4 h-4" />
+                <Loader2 className="animate-spin w-5 h-5" />
               ) : (
                 <>Analyze <Search className="w-4 h-4" /></>
               )}
@@ -102,14 +108,14 @@ function App() {
           </form>
 
           {error && (
-            <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 flex items-center gap-2 max-w-xl mx-auto text-left animate-reveal">
+            <div className="mt-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 flex items-center gap-3 max-w-xl mx-auto text-left animate-reveal">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <p>{error}</p>
+              <p className="text-sm font-medium">{error}</p>
             </div>
           )}
         </div>
 
-        {/* Loading State */}
+        {/* Loading State Overlay */}
         {loading && <LoadingScreen stage={stage} />}
 
         {/* Results Section */}
@@ -142,29 +148,32 @@ function App() {
               
               {/* Sidebar Info */}
               <div className="lg:col-span-1 flex flex-col gap-6">
-                <div className="bg-surface rounded-xl p-6 border border-white/5 animate-reveal stagger-5">
-                  <h3 className="text-sm uppercase tracking-wider text-gray-500 font-bold mb-4">Project Stats</h3>
+                <div className="bg-surface rounded-2xl p-6 border border-white/5 shadow-xl animate-reveal stagger-5">
+                  <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-black mb-6">Telemetry Data</h3>
                   <div className="space-y-4">
-                      <div className="flex justify-between items-center py-2 border-b border-white/5">
-                          <span className="text-gray-400">Code Quality</span>
-                          <span className="font-mono text-white">{result.breakdown.codeQuality}%</span>
+                      <div className="flex justify-between items-center py-3 border-b border-white/5">
+                          <span className="text-gray-400 text-sm font-medium">Code Quality</span>
+                          <span className="font-mono text-primary font-bold">{result.breakdown.codeQuality}%</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-white/5">
-                          <span className="text-gray-400">Structure</span>
-                          <span className="font-mono text-white">{result.breakdown.structure}%</span>
+                      <div className="flex justify-between items-center py-3 border-b border-white/5">
+                          <span className="text-gray-400 text-sm font-medium">Architecture</span>
+                          <span className="font-mono text-primary font-bold">{result.breakdown.structure}%</span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-white/5">
-                          <span className="text-gray-400">Documentation</span>
-                          <span className="font-mono text-white">{result.breakdown.documentation}%</span>
+                      <div className="flex justify-between items-center py-3">
+                          <span className="text-gray-400 text-sm font-medium">Documentation</span>
+                          <span className="font-mono text-primary font-bold">{result.breakdown.documentation}%</span>
                       </div>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl p-6 border border-primary/20 animate-reveal stagger-6">
-                    <p className="text-xs text-primary font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <Sparkles size={12}/> AI Mentor Tip
+                <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent rounded-2xl p-6 border border-primary/20 shadow-xl animate-reveal stagger-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <Sparkles size={40} className="text-primary" />
+                    </div>
+                    <p className="text-xs text-primary font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <Sparkles size={12}/> AI Mentor Insight
                     </p>
-                    <p className="text-sm text-gray-200 leading-relaxed italic">
+                    <p className="text-[15px] text-gray-200 leading-relaxed italic font-serif">
                       "{result.roadmap[0]}"
                     </p>
                 </div>
