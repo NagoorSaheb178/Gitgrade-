@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Github, Search, Loader2, AlertCircle, Sparkles, LogIn } from 'lucide-react';
+import { Github, Search, Loader2, AlertCircle, Sparkles, LogIn, RotateCcw } from 'lucide-react';
 import { parseRepoUrl, fetchRepoData } from './services/githubService';
 import { analyzeRepo } from './services/aiService';
 import { AnalysisResult } from './types';
@@ -72,6 +72,13 @@ function App() {
     }
   };
 
+  const handleReset = () => {
+    setResult(null);
+    setError(null);
+    setUrl('');
+    setStage('');
+  };
+
   return (
     <div className="min-h-screen bg-background text-gray-100 selection:bg-primary/30 font-sans pb-24">
       {/* Navbar */}
@@ -84,18 +91,18 @@ function App() {
             <span className="font-bold text-xl tracking-tight">GitGrade</span>
           </div>
           <div className="hidden md:flex items-center gap-4 text-sm text-gray-400">
-             {!isPuterAuth && (
-               <button 
+            {!isPuterAuth && (
+              <button
                 onClick={handleSignIn}
                 className="flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-accent hover:bg-accent/30 transition-all text-xs font-bold"
-               >
-                 <LogIn size={12}/> Sign in to Puter
-               </button>
-             )}
-             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10">
-               <Sparkles size={14} className="text-accent"/> 
-               AI v2.0
-             </span>
+              >
+                <LogIn size={12} /> Sign in to Puter
+              </button>
+            )}
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+              <Sparkles size={14} className="text-accent" />
+              AI v2.0
+            </span>
           </div>
         </div>
       </nav>
@@ -111,7 +118,7 @@ function App() {
             How good is your code?
           </h1>
           <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-            Get an instant AI evaluation of your GitHub repository. 
+            Get an instant AI evaluation of your GitHub repository.
             Deployed seamlessly on Vercel with Puter Intelligence.
           </p>
 
@@ -147,7 +154,7 @@ function App() {
                 <p className="text-sm font-medium">{error}</p>
               </div>
               {!isPuterAuth && (
-                <button 
+                <button
                   onClick={handleSignIn}
                   className="mt-2 text-xs font-bold uppercase tracking-widest bg-white text-black px-4 py-2 rounded-lg hover:bg-gray-200"
                 >
@@ -162,6 +169,16 @@ function App() {
 
         {result && !loading && (
           <div className="space-y-6">
+            <div className="flex justify-between items-center animate-reveal">
+              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Analysis Results</h2>
+              <button
+                onClick={handleReset}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface border border-white/10 text-sm font-medium hover:bg-white/5 transition-all text-gray-400 hover:text-white"
+              >
+                <RotateCcw size={16} />
+                Analyze Another
+              </button>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 animate-reveal stagger-1">
                 <ScoreCard score={result.score} grade={result.grade} summary={result.summary} />
@@ -180,29 +197,29 @@ function App() {
                   <Roadmap steps={result.roadmap} />
                 </div>
               </div>
-              
+
               <div className="lg:col-span-1 flex flex-col gap-6">
                 <div className="bg-surface rounded-2xl p-6 border border-white/5 shadow-xl animate-reveal stagger-5">
                   <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-black mb-6">Telemetry</h3>
                   <div className="space-y-4">
-                      <div className="flex justify-between items-center py-3 border-b border-white/5">
-                          <span className="text-gray-400 text-sm font-medium">Quality</span>
-                          <span className="font-mono text-primary font-bold">{result.breakdown.codeQuality}%</span>
-                      </div>
-                      <div className="flex justify-between items-center py-3">
-                          <span className="text-gray-400 text-sm font-medium">Structure</span>
-                          <span className="font-mono text-primary font-bold">{result.breakdown.structure}%</span>
-                      </div>
+                    <div className="flex justify-between items-center py-3 border-b border-white/5">
+                      <span className="text-gray-400 text-sm font-medium">Quality</span>
+                      <span className="font-mono text-primary font-bold">{result.breakdown.codeQuality}%</span>
+                    </div>
+                    <div className="flex justify-between items-center py-3">
+                      <span className="text-gray-400 text-sm font-medium">Structure</span>
+                      <span className="font-mono text-primary font-bold">{result.breakdown.structure}%</span>
+                    </div>
                   </div>
                 </div>
 
                 <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent rounded-2xl p-6 border border-primary/20 shadow-xl animate-reveal stagger-6 relative overflow-hidden group">
-                    <p className="text-xs text-primary font-black uppercase tracking-widest mb-3 flex items-center gap-2">
-                      <Sparkles size={12}/> AI Mentor
-                    </p>
-                    <p className="text-[15px] text-gray-200 leading-relaxed italic font-serif">
-                      "{result.roadmap[0]}"
-                    </p>
+                  <p className="text-xs text-primary font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Sparkles size={12} /> AI Mentor
+                  </p>
+                  <p className="text-[15px] text-gray-200 leading-relaxed italic font-serif">
+                    "{result.roadmap[0]}"
+                  </p>
                 </div>
               </div>
             </div>
